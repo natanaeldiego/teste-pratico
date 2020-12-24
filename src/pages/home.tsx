@@ -1,98 +1,108 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { selectors } from '../redux/selectors';
+import { apiServer } from '../services/api';
 import { Container, Content, List, ListItem, Icon, Text, Left, Button, Body } from 'native-base';
 import {
   StyleSheet
 } from 'react-native';
+import { FooterTabar } from '../components';
 
-//onPress={() => navigate('ContentPage')}
-const Home = () => {
-
+const Home = ({route}:any) => {
   const { navigate } = useNavigation();
+  const listPages = useSelector(selectors.getPages);
+  const [resultData, setResultData] = useState([]);
+  const [noticiasPosts, setNoticiasPosts] = useState([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      let contentData;
+      if (route.params?.content.length > 0) {
+        contentData = route.params?.content;
+      } else {
+        contentData = listPages.resultPages[0]?.content;
+      }
+
+      if (contentData.length > 0) {
+        let noticiaDataPosts = [];
+
+        setResultData(contentData);
+        let appData = {}
+        async function getPosts() {
+          let i = 0;
+          const promises = Promise.all(contentData.map(async (value) => {
+
+            appData = {
+              "category": value.properties.categories
+            }
+
+            await apiServer.post(`posts`, appData)
+            .then(
+              response => {
+                i++
+                noticiaDataPosts.push(response.data);
+              }
+            ).catch(error => {
+              console.log({ errorMessage: error.message });
+              console.error('There was an error!', error);
+            });
+
+            if (i === 4) {
+              setNoticiasPosts(noticiaDataPosts);
+            }
+          }))
+          await Promise.all(promises);
+        }
+        getPosts();
+      }
+    }, [route.params?.content])
+  );
 
   return (
       <Container>
         <Content>
           <List>
-            <ListItem itemDivider style={styles.titleInfo}>
-            <Text>Messagens do Presidente</Text>
-          </ListItem>
-
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#FF9501" }}>
-                <Icon active name="airplane" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Airplane Mode</Text>
-            </Body>
-          </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#FF9501" }}>
-                <Icon active name="airplane" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Airplane Mode</Text>
-            </Body>
-          </ListItem>
-
-            <ListItem itemDivider style={styles.titleInfo}>
-              <Text>Notícias</Text>
-            </ListItem>
-            <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#FF9501" }}>
-                <Icon active name="airplane" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Airplane Mode</Text>
-            </Body>
-          </ListItem>
-
-            <ListItem itemDivider style={styles.titleInfo}>
-              <Text>Horários e Serviços</Text>
-          </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#FF9501" }}>
-                <Icon active name="airplane" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Airplane Mode</Text>
-            </Body>
-          </ListItem>
-
-          <ListItem itemDivider style={styles.titleInfo}>
-              <Text>Taxas e Tarifários</Text>
-          </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#FF9501" }}>
-                <Icon active name="airplane" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Airplane Mode</Text>
-            </Body>
-          </ListItem>
+            {
+              resultData.map((data, indice) => (
+                <>
+                  <ListItem key={indice} itemDivider style={styles.titleInfo}>
+                    <Text>{data.title}</Text>
+                  </ListItem>
+                  {
+                    noticiasPosts.map((dataPosts) => {
+                      return (
+                        <>
+                          {
+                            dataPosts.map((value, indx) => {
+                              if (dataPosts[indx] && data.properties.categories.includes(dataPosts[indx].category)) {
+                                return (
+                                  <ListItem key={indx} icon onPress={()=>navigate('Detalhes',{content: value.content, title: value.title})}>
+                                    <Left>
+                                      <Button style={{ backgroundColor: "#FF9501" }}>
+                                        <Icon active name="airplane" />
+                                      </Button>
+                                    </Left>
+                                    <Body>
+                                      <Text>{value.title}</Text>
+                                    </Body>
+                                  </ListItem>
+                                )
+                              }
+                            })
+                          }
+                        </>
+                      )
+                    })
+                  }
+                </>
+              ))
+            }
           </List>
-        </Content>
-      </Container>
+      </Content>
+      {FooterTabar()}
+    </Container>
   );
 };
 
