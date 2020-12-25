@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { actions } from '../redux/actions';
 
 const apiServer = axios.create({
-  baseURL: 'http://192.168.0.101:3000/',
+  baseURL: 'IP-SERVER:3000/',
 });
 
 const resultHome = async () => {
