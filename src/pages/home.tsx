@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import {View} from 'react-native';
 import { selectors } from '../redux/selectors';
 import { apiServer } from '../services/api';
-import { Container, Content, List, ListItem, Icon, Text, Left, Button, Body } from 'native-base';
+import { Container, Content, List, ListItem, Text, Left, Body } from 'native-base';
 import {
   StyleSheet
 } from 'react-native';
-import { FooterTabar } from '../components';
+import { FooterTabar, IconAplication } from '../components';
+import { Loading } from '../components';
 
 const Home = ({route}:any) => {
   const { navigate } = useNavigation();
   const listPages = useSelector(selectors.getPages);
   const [resultData, setResultData] = useState([]);
   const [noticiasPosts, setNoticiasPosts] = useState([]);
+  const [iconPosts, setIconPosts] = useState('');
+  const [tabbarName, setTabbarName] = useState('');
 
   useFocusEffect(
     React.useCallback(() => {
@@ -21,13 +25,16 @@ const Home = ({route}:any) => {
       let contentData;
       if (route.params?.content.length > 0) {
         contentData = route.params?.content;
+        setIconPosts(route.params?.icon)
+        setTabbarName(route.params?.tabbarName);
       } else {
         contentData = listPages.resultPages[0]?.content;
+        setIconPosts(listPages.resultPages[0]?.icon)
+        setTabbarName(listPages.resultPages[0]?.title);
       }
 
-      if (contentData.length > 0) {
+      if (contentData?.length > 0) {
         let noticiaDataPosts = [];
-
         setResultData(contentData);
         let appData = {}
         async function getPosts() {
@@ -49,7 +56,7 @@ const Home = ({route}:any) => {
               console.error('There was an error!', error);
             });
 
-            if (i === 4) {
+            if (i === contentData.length) {
               setNoticiasPosts(noticiaDataPosts);
             }
           }))
@@ -62,27 +69,25 @@ const Home = ({route}:any) => {
 
   return (
       <Container>
-        <Content>
+        <Content style={styles.marginTop}>
           <List>
             {
               resultData.map((data, indice) => (
-                <>
+                <View key={indice}>
                   <ListItem key={indice} itemDivider style={styles.titleInfo}>
-                    <Text>{data.title}</Text>
+                    <Text style={styles.fontTextTitle}>{data.title}</Text>
                   </ListItem>
                   {
-                    noticiasPosts.map((dataPosts) => {
+                    noticiasPosts.length > 0 ? noticiasPosts.map((dataPosts, idx) => {
                       return (
-                        <>
+                        <View key={idx}>
                           {
                             dataPosts.map((value, indx) => {
                               if (dataPosts[indx] && data.properties.categories.includes(dataPosts[indx].category)) {
                                 return (
                                   <ListItem key={indx} icon onPress={()=>navigate('Detalhes',{content: value.content, title: value.title})}>
                                     <Left>
-                                      <Button style={{ backgroundColor: "#FF9501" }}>
-                                        <Icon active name="airplane" />
-                                      </Button>
+                                      <IconAplication iconName={iconPosts} size={20} color={'#262626'} tabbarName={tabbarName} />
                                     </Left>
                                     <Body>
                                       <Text>{value.title}</Text>
@@ -92,11 +97,11 @@ const Home = ({route}:any) => {
                               }
                             })
                           }
-                        </>
+                        </View>
                       )
-                    })
+                    }) : Loading()
                   }
-                </>
+                </View>
               ))
             }
           </List>
@@ -110,6 +115,13 @@ const styles = StyleSheet.create({
   titleInfo: {
     justifyContent: 'center',
   },
+  fontTextTitle: {
+    fontWeight: '900',
+    fontSize: 18
+  },
+  marginTop: {
+    marginTop: 10
+  }
 });
 
 export default Home;
