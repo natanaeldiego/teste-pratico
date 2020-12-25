@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  View,
-} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Container, Content, Card, CardItem, Text, Body } from "native-base";
 
 const Contents = ({ route }: any) => {
@@ -15,7 +13,7 @@ const Contents = ({ route }: any) => {
       <Content padder>
         <Card>
           <CardItem header bordered>
-            <Text>{route.params?.title}</Text>
+            <Text style={styles.textTitle}>{route.params?.title}</Text>
           </CardItem>
           <CardItem bordered>
             <Body>
@@ -27,5 +25,14 @@ const Contents = ({ route }: any) => {
     </Container>
   );
 };
+
+const styles = StyleSheet.create({
+  textTitle: {
+    fontSize: 20,
+    textAlign: 'justify',
+    color: '#5e5e5e',
+    fontWeight: 'bold'
+  }
+});
 
 export default Contents;

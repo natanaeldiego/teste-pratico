@@ -7,11 +7,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { resultHome } from '../services/api';
 import Home from '../pages/home';
 import Content from '../pages/content';
-import { View } from 'native-base';
+import { Loading } from '../components';
 
 const Stack = createStackNavigator();
 
-const App = ({ navigation }: any) => {
+const App = () => {
   const listPages = useSelector(selectors.getPages);
   const isPages = useSelector(selectors.isPages);
 
@@ -19,23 +19,13 @@ const App = ({ navigation }: any) => {
     resultHome();
   }
 
-  if (listPages.resultPages.length <= 0) return <View />
-
-  function HomeStackScreen() {
-    return (
-      <Stack.Navigator>
-        {
-          listPages.resultPages.length > 0 && listPages.resultPages.map((data:any, indice:string) => (
-            <Stack.Screen key={indice} options={{ headerShown: false }} name={data.title} component={indice == '0' ? pagesScreens : Content} />
-          ))
-        }
-      </Stack.Navigator>
-    );
+  if (listPages.resultPages.length <= 0) {
+    return Loading()
   }
 
   return (
     <>
-      <StatusBar backgroundColor="#05589c" barStyle={'default'} />
+      <StatusBar backgroundColor="#f0f0f0" barStyle={'dark-content'} />
       <NavigationContainer>
         <Stack.Navigator initialRouteName="HomePage">
           <Stack.Screen options={{ headerShown: false }} name="HomePage" component={Home} />
