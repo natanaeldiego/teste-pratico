@@ -6,7 +6,7 @@
 
 ## Preview da tela
 
-![Hook Preview](https://raw.githubusercontent.com/natanaeldiego/teste-pratico/master/img/Screenshot.gif)
+![Hook Preview](https://raw.githubusercontent.com/natanaeldiego/teste-pratico/master/img/Screenshot.gif?token=ADZADVOMYZ3FA4YPZ47AYUK74VIQG)
 
 ## Install at local
 
