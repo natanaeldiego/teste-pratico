@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Container, Content, Card, CardItem, Text, Body } from "native-base";
+import { Loading } from '../components';
 
 const Contents = ({ route }: any) => {
 
   if (!route.params?.content) {
-    return <View />
+    return Loading()
   }
 
   return (

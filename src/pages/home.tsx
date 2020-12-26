@@ -11,7 +11,27 @@ import {
 import { FooterTabar, IconAplication } from '../components';
 import { Loading } from '../components';
 
-const Home = ({route}:any) => {
+interface PostsApi {
+
+  title: string,
+
+  category: string,
+
+  content: string,
+}
+
+interface PagesApi {
+
+  type: string,
+
+  title: string,
+
+  properties: {
+    categories: Array<string>
+  }
+}
+
+const Home: React.FC = ({route}:any) => {
   const { navigate } = useNavigation();
   const listPages = useSelector(selectors.getPages);
   const [resultData, setResultData] = useState([]);
@@ -22,7 +42,7 @@ const Home = ({route}:any) => {
   useFocusEffect(
     React.useCallback(() => {
 
-      let contentData;
+      let contentData = Array<never>();
       if (route.params?.content.length > 0) {
         contentData = route.params?.content;
         setIconPosts(route.params?.icon)
@@ -34,12 +54,12 @@ const Home = ({route}:any) => {
       }
 
       if (contentData?.length > 0) {
-        let noticiaDataPosts = [];
+        let noticiaDataPosts = Array<string>();
         setResultData(contentData);
         let appData = {}
         async function getPosts() {
           let i = 0;
-          const promises = Promise.all(contentData.map(async (value) => {
+          const promises = contentData.map(async (value: PagesApi) => {
 
             appData = {
               "category": value.properties.categories
@@ -59,7 +79,7 @@ const Home = ({route}:any) => {
             if (i === contentData.length) {
               setNoticiasPosts(noticiaDataPosts);
             }
-          }))
+          })
           await Promise.all(promises);
         }
         getPosts();
@@ -72,18 +92,18 @@ const Home = ({route}:any) => {
         <Content style={styles.marginTop}>
           <List>
             {
-              resultData.map((data, indice) => (
+              resultData.map((data: PagesApi, indice) => (
                 <View key={indice}>
                   <ListItem key={indice} itemDivider style={styles.titleInfo}>
                     <Text style={styles.fontTextTitle}>{data.title}</Text>
                   </ListItem>
                   {
-                    noticiasPosts.length > 0 ? noticiasPosts.map((dataPosts, idx) => {
+                    Object.keys(noticiasPosts).length > 0 ? noticiasPosts.map((dataPosts, idx) => {
                       return (
                         <View key={idx}>
                           {
-                            dataPosts.map((value, indx) => {
-                              if (dataPosts[indx] && data.properties.categories.includes(dataPosts[indx].category)) {
+                            dataPosts.map((value: PostsApi, indx: string) => {
+                              if (noticiasPosts[idx][indx] && data.properties.categories.includes(noticiasPosts[idx][indx]['category'])) {
                                 return (
                                   <ListItem key={indx} icon onPress={()=>navigate('Detalhes',{content: value.content, title: value.title})}>
                                     <Left>
