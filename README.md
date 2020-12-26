@@ -41,7 +41,7 @@ Entre na pasta: src/services e abra o arquivo api.ts, depois dele aberto substit
 aonde o back-end está funcionando.
 
 const apiServer = axios.create({
-baseURL: 'IP-SERVER:3000/',
+baseURL: 'http://IP-SERVER:3000/',
 });
 
 Link to the BACK-END project / Link para o projeto BACK-END AQUI [HERE](https://github.com/natanaeldiego/teste-pratico-back-end)
