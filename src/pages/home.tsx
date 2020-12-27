@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import SplashScreen from 'react-native-splash-screen';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import {View} from 'react-native';
@@ -38,6 +39,10 @@ const Home: React.FC = ({route}:any) => {
   const [noticiasPosts, setNoticiasPosts] = useState([]);
   const [iconPosts, setIconPosts] = useState('');
   const [tabbarName, setTabbarName] = useState('');
+
+  useEffect(() => {
+    SplashScreen.hide();
+  },[]);
 
   useFocusEffect(
     React.useCallback(() => {

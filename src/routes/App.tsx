@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StatusBar } from "react-native";
 import { useSelector } from 'react-redux';
 import { selectors } from '../redux/selectors';
